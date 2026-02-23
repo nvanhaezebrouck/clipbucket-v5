@@ -1099,5 +1099,9 @@ class MWIP extends \Migration
             'en'=>'Unknown server error'
         ]);
 
-    }
+        self::generateTranslation('save', [
+            'fr'=>'Enregistrer',
+            'en'=>'Save'
+        ]);
+
 }
