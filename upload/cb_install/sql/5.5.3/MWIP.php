@@ -708,5 +708,185 @@ class MWIP extends \Migration
             'en'=>'Unable to set membership'
         ]);
 
+        self::generateTranslation('paypal_init_issue', [
+            'fr'=>'Une erreur est survenue lors de l\'initialisation de PayPal',
+            'en'=>'An error occurred while initializing PayPal'
+        ]);
+
+        self::generateTranslation('no_subscription_found', [
+            'fr'=>'Aucun abonnement trouvé',
+            'en'=>'No subscription found'
+        ]);
+
+        self::generateTranslation('paypal_paiment_faild_generic', [
+            'fr'=>'Le paiement a échoué. Veuillez réessayer.',
+            'en'=>'Payment failed. Please try again.'
+        ]);
+
+        self::generateTranslation('error_loading_script_file', [
+            'fr'=>'Erreur lors du chargement du script',
+            'en'=>'Error loading script file'
+        ]);
+
+        self::generateTranslation('error_loading_css_file', [
+            'fr'=>'Erreur lors du chargement du fichier CSS',
+            'en'=>'Error loading CSS file'
+        ]);
+
+        self::generateTranslation('failed_delete_vault', [
+            'fr'=>'Échec de la suppression de la carte',
+            'en'=>'Failed to delete card'
+        ]);
+
+        self::generateTranslation('failed_get_vault', [
+            'fr'=>'Échec de la récupération des cartes enregistrées',
+            'en'=>'Failed to retrieve saved cards'
+        ]);
+
+        self::generateTranslation('make_payment', [
+            'fr'=>'Effectuer un paiement',
+            'en'=>'Make a payment'
+        ]);
+
+        self::generateTranslation('payment_successful', [
+            'fr'=>'Paiement réussi !',
+            'en'=>'Payment successful!'
+        ]);
+
+        self::generateTranslation('payment_success_message', [
+            'fr'=>'Votre paiement de <strong>%s</strong> a été traité avec succès. Vous recevrez un email de confirmation dans quelques instants.',
+            'en'=>'Your payment of <strong>%s</strong> has been processed successfully. You will receive a confirmation email shortly.'
+        ]);
+
+        self::generateTranslation('payment_failed', [
+            'fr'=>'Échec du paiement',
+            'en'=>'Payment failed'
+        ]);
+
+        self::generateTranslation('payment_failed_reason', [
+            'fr'=>'Votre paiement n\'a pas pu être traité. Raison : <strong>%s</strong>. Veuillez vérifier vos informations ou utiliser une autre carte.',
+            'en'=>'Your payment could not be processed. Reason: <strong>%s</strong>. Please check your information or use another card.'
+        ]);
+
+        self::generateTranslation('amount_to_pay', [
+            'fr'=>'Montant à payer',
+            'en'=>'Amount to pay'
+        ]);
+
+        self::generateTranslation('use_saved_card', [
+            'fr'=>'Utiliser une carte enregistrée',
+            'en'=>'Use a saved card'
+        ]);
+
+        self::generateTranslation('enter_new_card', [
+            'fr'=>'Saisir une nouvelle carte',
+            'en'=>'Enter a new card'
+        ]);
+
+        self::generateTranslation('card_number', [
+            'fr'=>'Numéro de carte',
+            'en'=>'Card number'
+        ]);
+
+        self::generateTranslation('card_holder', [
+            'fr'=>'Titulaire de la carte',
+            'en'=>'Card holder'
+        ]);
+
+        self::generateTranslation('expiry', [
+            'fr'=>'Expire',
+            'en'=>'Expiry'
+        ]);
+
+        self::generateTranslation('cvv', [
+            'fr'=>'CVV',
+            'en'=>'CVV'
+        ]);
+
+        self::generateTranslation('save_card_for_future', [
+            'fr'=>'Enregistrer cette carte pour les prochains paiements. Vous pourrez la supprimer à tout moment depuis votre compte.',
+            'en'=>'Save this card for future payments. You can remove it at any time from your account.'
+        ]);
+
+        self::generateTranslation('auto_renew_payment', [
+            'fr'=>'Renouveler le paiement automatiquement à chaque échéance. Vous pourrez annuler à tout moment depuis votre compte.',
+            'en'=>'Automatically renew payment at each due date. You can cancel at any time from your account.'
+        ]);
+
+        self::generateTranslation('pay', [
+            'fr'=>'Payer',
+            'en'=>'Pay'
+        ]);
+
+        self::generateTranslation('saved_payment_cards', [
+            'fr'=>'Cartes de paiement enregistrées',
+            'en'=>'Saved payment cards'
+        ]);
+
+        self::generateTranslation('add_card', [
+            'fr'=>'Ajouter une carte',
+            'en'=>'Add a card'
+        ]);
+
+        self::generateTranslation('add_new_card', [
+            'fr'=>'Ajouter une nouvelle carte',
+            'en'=>'Add a new card'
+        ]);
+
+        self::generateTranslation('card_add_info', [
+            'fr'=>'L\'ajout d\'une carte déclenchera une demande d\'autorisation de paiement de 0,01 €. Ce montant ne sera pas prélevé, il s\'agit uniquement d\'une vérification de la validité de votre carte.',
+            'en'=>'Adding a card will trigger a payment authorization request for €0.01. This amount will not be charged; it is only to verify the validity of your card.'
+        ]);
+
+        self::generateTranslation('expiry_month', [
+            'fr'=>'Mois d\'expiration',
+            'en'=>'Expiry month'
+        ]);
+
+        self::generateTranslation('expiry_year', [
+            'fr'=>'Année d\'expiration',
+            'en'=>'Expiry year'
+        ]);
+
+        self::generateTranslation('cancel', [
+            'fr'=>'Annuler',
+            'en'=>'Cancel'
+        ]);
+
+        self::generateTranslation('save_card', [
+            'fr'=>'Enregistrer la carte',
+            'en'=>'Save card'
+        ]);
+
+        self::generateTranslation('step_selection_membership', [
+            'fr'=>'Sélection de l\'abonnement',
+            'en'=>'Subscription selection'
+        ]);
+
+        self::generateTranslation('step_billing_address', [
+            'fr'=>'Adresse de facturation',
+            'en'=>'Billing address'
+        ]);
+
+        self::generateTranslation('step_payment', [
+            'fr'=>'Paiement',
+            'en'=>'Payment'
+        ]);
+
+        self::generateTranslation('card_refused', [
+            'fr'=>'Carte refusée',
+            'en'=>'Card declined'
+        ]);
+
+        self::generateTranslation('information', [
+            'fr'=>'Information',
+            'en'=>'Information'
+        ]);
+
+        self::generateTranslation('card_added_success', [
+            'fr'=>'Carte ajoutée avec succès !',
+            'en'=>'Card added successfully!'
+        ]);
+
     }
 }
