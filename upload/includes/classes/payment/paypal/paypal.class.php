@@ -617,25 +617,86 @@ class Paypal implements PaymentSystemInterface
 
     protected function handleCompleteError(\Exception $e, array $attributes) :void { }
 
+    /**
+     * Get membership data from database using id_user_membership
+     */
+    protected function getMembershipData(array $attributes) :?array {
+        $idUserMembership = $attributes['id_user_membership'] ?? null;
+        if (empty($idUserMembership)) {
+            return null;
+        }
+
+        $sql = 'SELECT * FROM ' . cb_sql_table('user_memberships') . ' WHERE id_user_membership = ' . (int)$idUserMembership;
+        $result = Clipbucket_db::getInstance()->_select($sql);
+        return $result[0] ?? null;
+    }
+
     protected function getAmountFromAttribute(array $attributes) :float {
-        return (float)($attributes['amount'] ?? 0.0);
+        // Priority: direct amount in attributes, then from database
+        if (!empty($attributes['amount'])) {
+            return (float)$attributes['amount'];
+        }
+
+        $membership = $this->getMembershipData($attributes);
+        return (float)($membership['base_price'] ?? 0.0);
     }
 
     protected function getAddressFromAttribute(array $attributes) :array {
-        $billing = $attributes['billing_address'] ?? [];
+        // Priority: direct billing_address in attributes
+        if (!empty($attributes['billing_address'])) {
+            $billing = $attributes['billing_address'];
+            return [
+                'name' => $billing['name'] ?? '',
+                'address_line_1' => $billing['address_line_1'] ?? '',
+                'address_line_2' => $billing['address_line_2'] ?? '',
+                'admin_area_1' => $billing['admin_area_1'] ?? '',
+                'admin_area_2' => $billing['admin_area_2'] ?? '',
+                'postal_code' => $billing['postal_code'] ?? '',
+                'country_code' => $billing['country_code'] ?? ''
+            ];
+        }
+
+        // Fallback: get from database via id_user_billing_address linked to user_membership
+        $idUserMembership = $attributes['id_user_membership'] ?? null;
+        if ($idUserMembership) {
+            // First get id_user_billing_address from user_memberships
+            $sql = 'SELECT id_user_billing_address FROM ' . cb_sql_table('user_memberships') . ' WHERE id_user_membership = ' . (int)$idUserMembership;
+            $result = Clipbucket_db::getInstance()->_select($sql);
+            $idUserBillingAddress = $result[0]['id_user_billing_address'] ?? null;
+
+            if ($idUserBillingAddress) {
+                // Get the billing address data
+                $sql = 'SELECT * FROM ' . cb_sql_table('user_billing_address') . ' WHERE id_user_billing_address = ' . (int)$idUserBillingAddress;
+                $result = Clipbucket_db::getInstance()->_select($sql);
+                $billing = $result[0] ?? null;
+
+                if ($billing) {
+                    return [
+                        'name' => $billing['billing_name'] ?? '',
+                        'address_line_1' => $billing['billing_address_line_1'] ?? '',
+                        'address_line_2' => $billing['billing_address_line_2'] ?? '',
+                        'admin_area_1' => $billing['billing_admin_area_1'] ?? '',
+                        'admin_area_2' => $billing['billing_admin_area_2'] ?? '',
+                        'postal_code' => $billing['billing_postal_code'] ?? '',
+                        'country_code' => $billing['billing_country_code'] ?? ''
+                    ];
+                }
+            }
+        }
+
         return [
-            'name' => $billing['name'] ?? '',
-            'address_line_1' => $billing['address_line_1'] ?? '',
-            'address_line_2' => $billing['address_line_2'] ?? '',
-            'admin_area_1' => $billing['admin_area_1'] ?? '',
-            'admin_area_2' => $billing['admin_area_2'] ?? '',
-            'postal_code' => $billing['postal_code'] ?? '',
-            'country_code' => $billing['country_code'] ?? ''
+            'name' => '',
+            'address_line_1' => '',
+            'address_line_2' => '',
+            'admin_area_1' => '',
+            'admin_area_2' => '',
+            'postal_code' => '',
+            'country_code' => ''
         ];
     }
 
     protected function isCardShouldBeSaved(array $attributes) :bool {
-        return ($attributes['save_card'] ?? false) === true;
+        return ($attributes['saveCard'] ?? $attributes['save_card'] ?? false) === true;
     }
 
     protected function getPaypalVaultIdFromAttribute(array $attributes) :?string {
@@ -720,16 +781,24 @@ class Paypal implements PaymentSystemInterface
                 $address = $this->getAddressFromAttribute($attributes);
                 $saveCard = $this->isCardShouldBeSaved($attributes);
 
+                // Validate required fields for PayPal
+                if (empty($address['country_code']) || strlen($address['country_code']) !== 2) {
+                    throw new \ClientVisibleException('Invalid or missing country_code. Expected 2-letter ISO country code.');
+                }
+                if (empty($address['name'])) {
+                    throw new \ClientVisibleException('Missing billing name.');
+                }
+
                 $this->createOrder(
                     $amount,
                     $this->currency,
-                    $address['name'] ?? '',
-                    $address['address_line_1'] ?? '',
-                    $address['address_line_2'] ?? '',
-                    $address['admin_area_2'] ?? '',
-                    $address['admin_area_1'] ?? '',
-                    $address['postal_code'] ?? '',
-                    $address['country_code'] ?? '',
+                    $address['name'],
+                    $address['address_line_1'],
+                    $address['address_line_2'],
+                    $address['admin_area_2'],
+                    $address['admin_area_1'],
+                    $address['postal_code'],
+                    $address['country_code'],
                     $saveCard
                 );
                 // createOrder handles the response and exits
