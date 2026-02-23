@@ -423,7 +423,7 @@ class Paypal {
         const cardFields = paypal.CardFields({
 
             createOrder: function (data, actions) {
-                return fetch(instance.url_paiement, {
+                return fetch("/actions/payment.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: new URLSearchParams({action: 'create_order', attributes: JSON.stringify(instance.attributes) }).toString()
@@ -439,7 +439,7 @@ class Paypal {
             },
             onApprove: function (data, actions) {
                 let order_id = data.orderID;
-                return fetch(instance.url_paiement, {
+                return fetch("/actions/payment.php", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: new URLSearchParams({action: 'complete_order', order_id: order_id, attributes: JSON.stringify(instance.attributes)}).toString()

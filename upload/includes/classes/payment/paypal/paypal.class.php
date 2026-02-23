@@ -609,7 +609,7 @@ class Paypal implements PaymentSystemInterface
 
     protected function handleOrderSuccess(string $response, array $attributes) :void { }
 
-    protected function handleOrderError(\Exception $e, array $attributes) :void { }
+    protected function handleOrderError(\Exception $e, $attributes) :void { }
 
     protected function beforeCompleteOrder(array $attributes) :void { }
 
