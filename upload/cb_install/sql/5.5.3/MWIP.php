@@ -888,5 +888,180 @@ class MWIP extends \Migration
             'en'=>'Card added successfully!'
         ]);
 
+        self::generateTranslation('billing_address', [
+            'fr'=>'Adresse de facturation',
+            'en'=>'Billing address'
+        ]);
+
+        self::generateTranslation('address_name', [
+            'fr'=>'Nom',
+            'en'=>'Name'
+        ]);
+
+        self::generateTranslation('address_line_1', [
+            'fr'=>'Adresse ligne 1',
+            'en'=>'Address line 1'
+        ]);
+
+        self::generateTranslation('address_line_2', [
+            'fr'=>'Adresse ligne 2',
+            'en'=>'Address line 2'
+        ]);
+
+        self::generateTranslation('placeholder_address_line', [
+            'fr'=>'Numéro et rue',
+            'en'=>'Number and street'
+        ]);
+
+        self::generateTranslation('placeholder_address_line_2', [
+            'fr'=>'Appartement, suite, etc. (optionnel)',
+            'en'=>'Apartment, suite, etc. (optional)'
+        ]);
+
+        self::generateTranslation('city', [
+            'fr'=>'Ville',
+            'en'=>'City'
+        ]);
+
+        self::generateTranslation('region_department', [
+            'fr'=>'Région/Département',
+            'en'=>'Region/State'
+        ]);
+
+        self::generateTranslation('postal_code', [
+            'fr'=>'Code postal',
+            'en'=>'Postal code'
+        ]);
+
+        self::generateTranslation('country', [
+            'fr'=>'Pays',
+            'en'=>'Country'
+        ]);
+
+        self::generateTranslation('select_country', [
+            'fr'=>'Sélectionner un pays',
+            'en'=>'Select a country'
+        ]);
+
+        self::generateTranslation('no_saved_cards', [
+            'fr'=>'Aucune carte enregistrée',
+            'en'=>'No saved cards'
+        ]);
+
+        self::generateTranslation('add_card_facilitate', [
+            'fr'=>'Ajoutez une carte pour faciliter vos paiements.',
+            'en'=>'Add a card to facilitate your payments.'
+        ]);
+
+        self::generateTranslation('expiry_short', [
+            'fr'=>'Exp',
+            'en'=>'Exp'
+        ]);
+
+        self::generateTranslation('default_card', [
+            'fr'=>'Par défaut',
+            'en'=>'Default'
+        ]);
+
+        self::generateTranslation('delete_card', [
+            'fr'=>'Supprimer',
+            'en'=>'Delete'
+        ]);
+
+        self::generateTranslation('confirm_delete_card', [
+            'fr'=>'Supprimer cette carte ?',
+            'en'=>'Delete this card?'
+        ]);
+
+        self::generateTranslation('th_id_transaction', [
+            'fr'=>'Id transaction',
+            'en'=>'Transaction ID'
+        ]);
+
+        self::generateTranslation('th_type', [
+            'fr'=>'Type',
+            'en'=>'Type'
+        ]);
+
+        self::generateTranslation('th_customer_id', [
+            'fr'=>'ID Client',
+            'en'=>'Customer ID'
+        ]);
+
+        self::generateTranslation('th_comment', [
+            'fr'=>'Commentaire',
+            'en'=>'Comment'
+        ]);
+
+        self::generateTranslation('th_status', [
+            'fr'=>'Statut',
+            'en'=>'Status'
+        ]);
+
+        self::generateTranslation('th_total_amount', [
+            'fr'=>'Montant total',
+            'en'=>'Total amount'
+        ]);
+
+        self::generateTranslation('th_net_amount', [
+            'fr'=>'Montant net',
+            'en'=>'Net amount'
+        ]);
+
+        self::generateTranslation('th_paypal_fees', [
+            'fr'=>'Frais PayPal',
+            'en'=>'PayPal fees'
+        ]);
+
+        self::generateTranslation('th_currency', [
+            'fr'=>'Devise',
+            'en'=>'Currency'
+        ]);
+
+        self::generateTranslation('th_created_date', [
+            'fr'=>'Date création',
+            'en'=>'Created date'
+        ]);
+
+        self::generateTranslation('th_update_time', [
+            'fr'=>'Date mise à jour',
+            'en'=>'Update time'
+        ]);
+
+        self::generateTranslation('actions', [
+            'fr'=>'Actions',
+            'en'=>'Actions'
+        ]);
+
+        self::generateTranslation('refund', [
+            'fr'=>'Rembourser',
+            'en'=>'Refund'
+        ]);
+
+        self::generateTranslation('renew', [
+            'fr'=>'Renouveler',
+            'en'=>'Renew'
+        ]);
+
+        self::generateTranslation('unable_to_set_billing_address', [
+            'fr'=>'Impossible d\'enregistrer l\'adresse de facturation',
+            'en'=>'Unable to save billing address'
+        ]);
+
+        self::generateTranslation('variable_paypal_missing', [
+            'fr'=>'Variable PayPal manquante',
+            'en'=>'PayPal variable missing'
+        ]);
+
+        self::generateTranslation('network_error', [
+            'fr'=>'Erreur réseau',
+            'en'=>'Network error'
+        ]);
+
+        self::generateTranslation('server_unknown_error', [
+            'fr'=>'Erreur serveur inconnue',
+            'en'=>'Unknown server error'
+        ]);
+
     }
 }
