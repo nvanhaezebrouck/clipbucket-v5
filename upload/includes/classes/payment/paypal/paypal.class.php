@@ -104,7 +104,7 @@ class Paypal implements PaymentSystemInterface
                 'billing_country_code' => $countryCode
             ]);
 
-            $transactionId = Database::getInstance()->getLastInsertId();
+            $transactionId = Clipbucket_db::getInstance()->insert_id();
             $this->addLog($response, $transactionId);
             $this->handleOrderSuccess($response, $_POST['attributes'] ?? []);
 
@@ -182,7 +182,7 @@ class Paypal implements PaymentSystemInterface
                 'update_time' => $this->convertPayPalDate($capture['update_time'] ?? null)
             ]);
 
-            $transactionId = Database::getInstance()->getLastInsertId();
+            $transactionId = Clipbucket_db::getInstance()->insert_id();
             $this->addLog($response, $transactionId);
 
             return ($data['status'] === 'COMPLETED');
@@ -332,7 +332,7 @@ class Paypal implements PaymentSystemInterface
                 'comment' => $noteToPayer
             ]);
 
-            $transactionId = Database::getInstance()->getLastInsertId();
+            $transactionId = Clipbucket_db::getInstance()->insert_id();
             $this->addLog($response, $transactionId);
 
             echo $response;
@@ -426,11 +426,22 @@ class Paypal implements PaymentSystemInterface
      */
     protected function insertTransaction(array $data) :void
     {
-        $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_map(fn($k) => ":{$k}", array_keys($data)));
+        $columns = [];
+        $values = [];
 
-        $sql = "INSERT INTO {$this->tableTransaction} ({$columns}) VALUES ({$placeholders})";
-        Database::getInstance()->query($sql, $data);
+        foreach ($data as $key => $value) {
+            $columns[] = mysql_clean($key);
+            if ($value === null) {
+                $values[] = 'NULL';
+            } elseif (is_numeric($value)) {
+                $values[] = $value;
+            } else {
+                $values[] = "'" . mysql_clean($value) . "'";
+            }
+        }
+
+        $sql = "INSERT INTO {$this->tableTransaction} (" . implode(', ', $columns) . ") VALUES (" . implode(', ', $values) . ")";
+        Clipbucket_db::getInstance()->execute($sql);
     }
 
     /**
@@ -438,11 +449,19 @@ class Paypal implements PaymentSystemInterface
      */
     protected function updateTransaction(string $orderId, array $data) :void
     {
-        $set = implode(', ', array_map(fn($k) => "{$k} = :{$k}", array_keys($data)));
-        $data['paypal_order_id'] = $orderId;
+        $setParts = [];
+        foreach ($data as $key => $value) {
+            if ($value === null) {
+                $setParts[] = mysql_clean($key) . " = NULL";
+            } elseif (is_numeric($value)) {
+                $setParts[] = mysql_clean($key) . " = " . $value;
+            } else {
+                $setParts[] = mysql_clean($key) . " = '" . mysql_clean($value) . "'";
+            }
+        }
 
-        $sql = "UPDATE {$this->tableTransaction} SET {$set} WHERE paypal_order_id = :paypal_order_id";
-        Database::getInstance()->query($sql, $data);
+        $sql = "UPDATE {$this->tableTransaction} SET " . implode(', ', $setParts) . " WHERE paypal_order_id = '" . mysql_clean($orderId) . "'";
+        Clipbucket_db::getInstance()->execute($sql);
     }
 
     /**
@@ -450,10 +469,10 @@ class Paypal implements PaymentSystemInterface
      */
     protected function getTransactionByOrderId(string $orderId) :?array
     {
-        $sql = "SELECT * FROM {$this->tableTransaction} WHERE paypal_order_id = :order_id";
-        $stmt = Database::getInstance()->query($sql, [':order_id' => $orderId]);
+        $sql = "SELECT * FROM {$this->tableTransaction} WHERE paypal_order_id = '" . mysql_clean($orderId) . "'";
+        $result = Clipbucket_db::getInstance()->_select($sql);
 
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        return $result[0] ?? null;
     }
 
     /**
@@ -461,19 +480,21 @@ class Paypal implements PaymentSystemInterface
      */
     protected function saveVault(array $vaultData) :void
     {
+        $vaultId = $vaultData['id'] ?? null;
+        $status = $vaultData['status'] ?? '';
+        $customerId = $vaultData['customer_id'] ?? '';
+        $lastDigits = $vaultData['last_digits'] ?? '';
+        $expiry = $vaultData['expiry'] ?? '';
+        $brand = $vaultData['brand'] ?? '';
+        $type = $vaultData['type'] ?? '';
+
         $sql = "INSERT INTO {$this->tableVault} 
                 (paypal_vault_id, status, paypal_customer_id, last_digits, expiry, brand, type) 
-                VALUES (:vault_id, :status, :customer_id, :last_digits, :expiry, :brand, :type)";
+                VALUES (" . ($vaultId === null ? 'NULL' : "'" . mysql_clean($vaultId) . "'") . 
+                ", '" . mysql_clean($status) . "', '" . mysql_clean($customerId) . "', '" . mysql_clean($lastDigits) . "', '" . 
+                mysql_clean($expiry) . "', '" . mysql_clean($brand) . "', '" . mysql_clean($type) . "')";
 
-        Database::getInstance()->query($sql, [
-            ':vault_id' => $vaultData['id'] ?? null,
-            ':status' => $vaultData['status'],
-            ':customer_id' => $vaultData['customer_id'],
-            ':last_digits' => $vaultData['last_digits'],
-            ':expiry' => $vaultData['expiry'],
-            ':brand' => $vaultData['brand'],
-            ':type' => $vaultData['type']
-        ]);
+        Clipbucket_db::getInstance()->execute($sql);
     }
 
     /**
@@ -481,19 +502,19 @@ class Paypal implements PaymentSystemInterface
      */
     public function generateTransactionTable() :string
     {
-        $stmt = Database::getInstance()->query("SELECT * FROM {$this->tableTransaction}");
-        $columns = [];
+        $results = Clipbucket_db::getInstance()->_select("SELECT * FROM {$this->tableTransaction}");
 
-        for ($i = 0; $i < $stmt->columnCount(); $i++) {
-            $meta = $stmt->getColumnMeta($i);
-            $columns[] = $meta['name'];
+        if (empty($results)) {
+            return '<table class="paypal-transactions"><thead><tr><th>No transactions found</th></tr></thead></table>';
         }
+
+        $columns = array_keys($results[0]);
 
         $html = '<table class="paypal-transactions">';
         $html .= '<thead><tr>' . implode('', array_map(fn($col) => "<th>{$col}</th>", $columns)) . '</tr></thead>';
         $html .= '<tbody>';
 
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+        foreach ($results as $row) {
             $html .= '<tr>' . implode('', array_map(fn($val) => '<td>' . htmlspecialchars($val ?? '') . '</td>', $row)) . '</tr>';
         }
 
@@ -507,11 +528,8 @@ class Paypal implements PaymentSystemInterface
      */
     public function addLog(string $response, ?int $transactionId) :void
     {
-        $sql = "INSERT INTO {$this->tableLogs} (data, id_paypal_transaction) VALUES (:data, :transaction_id)";
-        Database::getInstance()->query($sql, [
-            ':data' => $response,
-            ':transaction_id' => $transactionId
-        ]);
+        $sql = "INSERT INTO {$this->tableLogs} (data, id_paypal_transaction) VALUES ('" . mysql_clean($response) . "', " . ($transactionId === null ? 'NULL' : (int)$transactionId) . ")";
+        Clipbucket_db::getInstance()->execute($sql);
     }
 
     /**
