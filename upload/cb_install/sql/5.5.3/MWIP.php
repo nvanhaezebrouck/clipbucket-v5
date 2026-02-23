@@ -670,38 +670,107 @@ class MWIP extends \Migration
             'en'=>'Transactions'
         ]);
 
-        /** @todo
-         *
-         *
-         * billing_name TEXT,
-         * billing_adress_line_1 TEXT,
-         * billing_adress_line_2 TEXT,
-         * billing_admin_area_1 TEXT,
-         * billing_admin_area_2 TEXT,
-         * billing_postal_code TEXT,
-         * billing_country_code TEXT,
-         *
-         * CREATE TABLE IF NOT EXISTS cb_user_billing_address (
-         * `id_user_billing_address` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-         * `userid` BIGINT NOT NULL,
-         * billing_name TEXT,
-         * billing_address_line_1 TEXT,
-         * billing_address_line_2 TEXT,
-         * billing_admin_area_1 TEXT,
-         * billing_admin_area_2 TEXT,
-         * billing_postal_code TEXT,
-         * billing_country_code TEXT,
-         * CONSTRAINT fk_user_billing FOREIGN KEY (userid) REFERENCES cb_users(userid)
-         * ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_520_ci;
-         *
-         * ALTER TABLE cb_user_memberships ADD COLUMN id_user_billing_address INT;
-         * ALTER TABLE cb_user_memberships ADD COLUMN is_card_saved ENUM('yes', 'no') DEFAULT 'no';
-         * ALTER TABLE cb_user_memberships MODIFY COLUMN date_start DATE NULL;
-         * ALTER TABLE cb_user_memberships MODIFY COLUMN date_end DATE NULL;
-         * ALTER TABLE cb_user_memberships DROP COLUMN price;
-         *
-         * ajouter les clef etrangere manquante
-         */
+        /** Add billing address columns to paypal_transactions */
+        self::alterTable('ALTER TABLE `' . tbl('paypal_transactions') . '` ADD COLUMN IF NOT EXISTS billing_name TEXT', [
+            'table' => 'paypal_transactions'
+        ], [
+            'table'  => 'paypal_transactions',
+            'column' => 'billing_name'
+        ]);
+        self::alterTable('ALTER TABLE `' . tbl('paypal_transactions') . '` ADD COLUMN IF NOT EXISTS billing_adress_line_1 TEXT', [
+            'table' => 'paypal_transactions'
+        ], [
+            'table'  => 'paypal_transactions',
+            'column' => 'billing_adress_line_1'
+        ]);
+        self::alterTable('ALTER TABLE `' . tbl('paypal_transactions') . '` ADD COLUMN IF NOT EXISTS billing_adress_line_2 TEXT', [
+            'table' => 'paypal_transactions'
+        ], [
+            'table'  => 'paypal_transactions',
+            'column' => 'billing_adress_line_2'
+        ]);
+        self::alterTable('ALTER TABLE `' . tbl('paypal_transactions') . '` ADD COLUMN IF NOT EXISTS billing_admin_area_1 TEXT', [
+            'table' => 'paypal_transactions'
+        ], [
+            'table'  => 'paypal_transactions',
+            'column' => 'billing_admin_area_1'
+        ]);
+        self::alterTable('ALTER TABLE `' . tbl('paypal_transactions') . '` ADD COLUMN IF NOT EXISTS billing_admin_area_2 TEXT', [
+            'table' => 'paypal_transactions'
+        ], [
+            'table'  => 'paypal_transactions',
+            'column' => 'billing_admin_area_2'
+        ]);
+        self::alterTable('ALTER TABLE `' . tbl('paypal_transactions') . '` ADD COLUMN IF NOT EXISTS billing_postal_code TEXT', [
+            'table' => 'paypal_transactions'
+        ], [
+            'table'  => 'paypal_transactions',
+            'column' => 'billing_postal_code'
+        ]);
+        self::alterTable('ALTER TABLE `' . tbl('paypal_transactions') . '` ADD COLUMN IF NOT EXISTS billing_country_code TEXT', [
+            'table' => 'paypal_transactions'
+        ], [
+            'table'  => 'paypal_transactions',
+            'column' => 'billing_country_code'
+        ]);
+
+        /** Create user_billing_address table */
+        $sql = 'CREATE TABLE IF NOT EXISTS `' . tbl('user_billing_address') . '` (
+            `id_user_billing_address` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `userid` BIGINT NOT NULL,
+            billing_name TEXT,
+            billing_address_line_1 TEXT,
+            billing_address_line_2 TEXT,
+            billing_admin_area_1 TEXT,
+            billing_admin_area_2 TEXT,
+            billing_postal_code TEXT,
+            billing_country_code TEXT,
+            CONSTRAINT fk_user_billing FOREIGN KEY (userid) REFERENCES `' . tbl('users') . '`(userid)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_520_ci';
+        self::query($sql);
+
+        /** Alter user_memberships table */
+        self::alterTable('ALTER TABLE `' . tbl('user_memberships') . '` ADD COLUMN IF NOT EXISTS id_user_billing_address INT', [
+            'table' => 'user_memberships'
+        ], [
+            'table'  => 'user_memberships',
+            'column' => 'id_user_billing_address'
+        ]);
+
+        self::alterTable('ALTER TABLE `' . tbl('user_memberships') . '` ADD COLUMN IF NOT EXISTS is_card_saved ENUM(\'yes\', \'no\') DEFAULT \'no\'', [
+            'table' => 'user_memberships'
+        ], [
+            'table'  => 'user_memberships',
+            'column' => 'is_card_saved'
+        ]);
+
+        self::alterTable('ALTER TABLE `' . tbl('user_memberships') . '` ADD COLUMN IF NOT EXISTS is_auto_renew ENUM(\'yes\', \'no\') DEFAULT \'no\'', [
+            'table' => 'user_memberships'
+        ], [
+            'table'  => 'user_memberships',
+            'column' => 'is_auto_renew'
+        ]);
+
+        self::alterTable('ALTER TABLE `' . tbl('user_memberships') . '` MODIFY COLUMN date_start DATE NULL', [
+            'table' => 'user_memberships'
+        ], [
+            'table'  => 'user_memberships',
+            'column' => 'date_start'
+        ]);
+
+        self::alterTable('ALTER TABLE `' . tbl('user_memberships') . '` MODIFY COLUMN date_end DATE NULL', [
+            'table' => 'user_memberships'
+        ], [
+            'table'  => 'user_memberships',
+            'column' => 'date_end'
+        ]);
+
+        self::alterTable('ALTER TABLE `' . tbl('user_memberships') . '` DROP COLUMN IF EXISTS price', [
+            'table' => 'user_memberships'
+        ], [
+            'table'  => 'user_memberships',
+            'column' => 'price'
+        ]);
 
         self::generateTranslation('unable_to_set_membership', [
             'fr'=>'Echec de sélection d\'un abonnement',
