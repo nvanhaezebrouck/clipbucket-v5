@@ -96,8 +96,8 @@ class Paypal implements PaymentSystemInterface
                 'amount' => $amount,
                 'currency' => $currency,
                 'billing_name' => $name,
-                'billing_address_line_1' => $addressLine1,
-                'billing_address_line_2' => $addressLine2,
+                'billing_adress_line_1' => $addressLine1,
+                'billing_adress_line_2' => $addressLine2,
                 'billing_admin_area_2' => $adminArea2,
                 'billing_admin_area_1' => $adminArea1,
                 'billing_postal_code' => $postalCode,
@@ -221,6 +221,7 @@ class Paypal implements PaymentSystemInterface
                 if (($vault['status'] ?? '') === 'VAULTED') {
                     $vaultId = $vault['id'] ?? null;
                     $vaultData = [
+                        'id' => $vaultId,
                         'status' => $vault['status'],
                         'customer_id' => $vault['customer']['id'] ?? null,
                         'last_digits' => $card['last_digits'] ?? null,
@@ -481,6 +482,13 @@ class Paypal implements PaymentSystemInterface
     protected function saveVault(array $vaultData) :void
     {
         $vaultId = $vaultData['id'] ?? null;
+
+        // Skip if vault ID is not provided (cannot be NULL - it's the primary key)
+        if (empty($vaultId)) {
+            error_log("saveVault: skipping - vault ID is empty");
+            return;
+        }
+
         $status = $vaultData['status'] ?? '';
         $customerId = $vaultData['customer_id'] ?? '';
         $lastDigits = $vaultData['last_digits'] ?? '';
@@ -490,8 +498,8 @@ class Paypal implements PaymentSystemInterface
 
         $sql = "INSERT INTO {$this->tableVault} 
                 (paypal_vault_id, status, paypal_customer_id, last_digits, expiry, brand, type) 
-                VALUES (" . ($vaultId === null ? 'NULL' : "'" . mysql_clean($vaultId) . "'") . 
-                ", '" . mysql_clean($status) . "', '" . mysql_clean($customerId) . "', '" . mysql_clean($lastDigits) . "', '" . 
+                VALUES ('" . mysql_clean($vaultId) . "'" .
+                ", '" . mysql_clean($status) . "', '" . mysql_clean($customerId) . "', '" . mysql_clean($lastDigits) . "', '" .
                 mysql_clean($expiry) . "', '" . mysql_clean($brand) . "', '" . mysql_clean($type) . "')";
 
         Clipbucket_db::getInstance()->execute($sql);
