@@ -617,13 +617,30 @@ class Paypal implements PaymentSystemInterface
 
     protected function handleCompleteError(\Exception $e, array $attributes) :void { }
 
-    protected function getAmountFromAttribute(array $attributes) :float { return 0.0; }
+    protected function getAmountFromAttribute(array $attributes) :float {
+        return (float)($attributes['amount'] ?? 0.0);
+    }
 
-    protected function getAddressFromAttribute(array $attributes) :array { return []; }
+    protected function getAddressFromAttribute(array $attributes) :array {
+        $billing = $attributes['billing_address'] ?? [];
+        return [
+            'name' => $billing['name'] ?? '',
+            'address_line_1' => $billing['address_line_1'] ?? '',
+            'address_line_2' => $billing['address_line_2'] ?? '',
+            'admin_area_1' => $billing['admin_area_1'] ?? '',
+            'admin_area_2' => $billing['admin_area_2'] ?? '',
+            'postal_code' => $billing['postal_code'] ?? '',
+            'country_code' => $billing['country_code'] ?? ''
+        ];
+    }
 
-    protected function isCardShouldBeSaved(array $attributes) :bool { return false; }
+    protected function isCardShouldBeSaved(array $attributes) :bool {
+        return ($attributes['save_card'] ?? false) === true;
+    }
 
-    protected function getPaypalVaultIdFromAttribute() :?string { return null; }
+    protected function getPaypalVaultIdFromAttribute(array $attributes) :?string {
+        return $attributes['vault_id'] ?? null;
+    }
 
     public function getAllTransaction(int $idUserMembership) :array
     {
@@ -694,11 +711,65 @@ class Paypal implements PaymentSystemInterface
             throw new Exception('User is needed');
         }
 
+        $attributes = json_decode($_POST['attributes'] ?? '{}', true);
+
         switch($action) {
+            case 'create_order':
+                $this->beforeCreateOrder($attributes);
+                $amount = $this->getAmountFromAttribute($attributes);
+                $address = $this->getAddressFromAttribute($attributes);
+                $saveCard = $this->isCardShouldBeSaved($attributes);
+
+                $this->createOrder(
+                    $amount,
+                    $this->currency,
+                    $address['name'] ?? '',
+                    $address['address_line_1'] ?? '',
+                    $address['address_line_2'] ?? '',
+                    $address['admin_area_2'] ?? '',
+                    $address['admin_area_1'] ?? '',
+                    $address['postal_code'] ?? '',
+                    $address['country_code'] ?? '',
+                    $saveCard
+                );
+                // createOrder handles the response and exits
+                break;
+
+            case 'create_order_from_vault':
+                $this->beforeCreateOrder($attributes);
+                $amount = $this->getAmountFromAttribute($attributes);
+                $address = $this->getAddressFromAttribute($attributes);
+                $vaultId = $this->getPaypalVaultIdFromAttribute($attributes);
+
+                $success = $this->createOrderFromToken(
+                    $vaultId,
+                    $amount,
+                    $this->currency,
+                    $address['name'] ?? '',
+                    $address['address_line_1'] ?? '',
+                    $address['address_line_2'] ?? '',
+                    $address['admin_area_2'] ?? '',
+                    $address['admin_area_1'] ?? '',
+                    $address['postal_code'] ?? '',
+                    $address['country_code'] ?? ''
+                );
+
+                if (!$success) {
+                    throw new \ClientVisibleException('Echec de creation de la commande a partir du vault');
+                }
+                return ['status' => 'success'];
+
+            case 'complete_order':
+                $this->beforeCompleteOrder($attributes);
+                $this->completeOrder($_POST['order_id'] ?? '');
+                // completeOrder handles the response and exits
+                break;
+
             default:
                 throw new \ClientVisibleException('Unknown payment action : '.$action);
         }
 
+        return [];
     }
 
     public function getJsFile():string
