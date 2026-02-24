@@ -1104,4 +1104,5 @@ class MWIP extends \Migration
             'en'=>'Save'
         ]);
 
+    }
 }
