@@ -40,6 +40,14 @@ class Paypal {
 
             instance.attributes = {id_user_membership: id_user_membership, amount: amount, auto_renew: auto_renew, saveCard: saveCard };
 
+            // Vérifier les variables de configuration PayPal
+            if (! Paypal.paypal_sdk_url || ! Paypal.client_id || ! currency) {
+                if (_cb !== undefined && _cb.showMeTheMsg !== undefined) {
+                    _cb.showMeTheMsg('<div class="error">' + (lang_paypal_init_issue || 'PayPal initialization error') + '</div>');
+                }
+                throw new Error('PayPal configuration missing');
+            }
+
             // Charger le SDK PayPal
             Payment.urlToHead(Paypal.paypal_sdk_url + "?client-id=" + Paypal.client_id + "&currency=" + currency + "&intent=capture&commit=true&components=card-fields", 'js')
                 .then(() => {
