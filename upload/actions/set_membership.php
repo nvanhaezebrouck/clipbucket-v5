@@ -56,7 +56,8 @@ try {
             'userid' => $userid,
             'id_membership' => (int) $_POST['id_membership'],
             /** @todo Clement a rendre dynamic en recuperant l'id a partir du language_key_title */
-            'id_user_memberships_status' => 1 /* in_progress */
+            'id_user_memberships_status' => 1, /* in_progress */
+            'date_start' => date('Y-m-d H:i:s')
         ]);
     }
     elseif($nb_transaction == 0)

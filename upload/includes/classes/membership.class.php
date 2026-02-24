@@ -508,7 +508,11 @@ class Membership
             }
             if (isset($histoMembership[$field])) {
                 $fields[] = $field;
-                $values[] = $histoMembership[$field];
+                if (in_array($field, ['date_start', 'date_end'])) {
+                    $values[] = "'" . $histoMembership[$field] . "'";
+                } else {
+                    $values[] = $histoMembership[$field];
+                }
             }
         }
 
