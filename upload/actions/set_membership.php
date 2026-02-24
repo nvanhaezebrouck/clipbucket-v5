@@ -52,12 +52,19 @@ try {
     }
 
     if(empty($histoMemberships)) {
+        /** récupérer le prix du membership */
+        $membership = Membership::getInstance()->getOne([
+            'id_membership' => (int) $_POST['id_membership']
+        ]);
+        $price = $membership['base_price'] ?? 0;
+
         $id_user_membership = Membership::getInstance()->insertHistoMembership([
             'userid' => $userid,
             'id_membership' => (int) $_POST['id_membership'],
             /** @todo Clement a rendre dynamic en recuperant l'id a partir du language_key_title */
             'id_user_memberships_status' => 1, /* in_progress */
-            'date_start' => date('Y-m-d H:i:s')
+            'date_start' => date('Y-m-d H:i:s'),
+            'price' => $price
         ]);
     }
     elseif($nb_transaction == 0)

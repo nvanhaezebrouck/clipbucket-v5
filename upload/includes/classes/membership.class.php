@@ -42,7 +42,8 @@ class Membership
             'date_end',
             'id_user_billing_address',
             'is_card_saved',
-            'is_auto_renew'
+            'is_auto_renew',
+            'price'
         ];
 
         $this->frequencies = [
@@ -561,6 +562,11 @@ class Membership
                 case 'date_start':
                 case 'date_end':
                     /** @todo Clement : a remplir je ne sait pas comment vous verifiez les dates */
+                    break;
+                case 'price':
+                    if (empty($value)) {
+                        $value = 0;
+                    }
                     break;
                 default:
                     break;
