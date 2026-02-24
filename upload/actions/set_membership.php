@@ -56,7 +56,8 @@ try {
             'userid' => $userid,
             'id_membership' => (int) $_POST['id_membership'],
             /** @todo Clement a rendre dynamic en recuperant l'id a partir du language_key_title */
-            'id_user_memberships_status' => 1 /* in_progress */
+            'id_user_memberships_status' => 1, /* in_progress */
+            'date_start' => date('Y-m-d H:i:s')
         ]);
     }
     elseif($nb_transaction == 0)
@@ -83,9 +84,9 @@ try {
         'id_user_membership'   => $id_user_membership,
         'limit'      => '1'
     ]);
-    $amount = $histoMemberships[0]['base_price'];
-    $currency = $histoMemberships[0]['code_currency'];
-    $symbol = $histoMemberships[0]['symbol'];
+    $amount = $histoMemberships[0]['base_price'] ?? 0;
+    $currency = $histoMemberships[0]['code_currency'] ?? 'EUR';
+    $symbol = $histoMemberships[0]['symbol'] ?? '€';
 
     $response = ['success' => true
         ,'id_user_membership' => $id_user_membership

@@ -10,8 +10,9 @@ class PaypalCustom {
 
     init = function () {
         let instance = this;
-        // Charger le SDK PayPal
-        Payment.urlToHead(instance.paypal_sdk_url + "?client-id=" + instance.client_id + "&currency=" + instance.currency + "&intent=capture&commit=true&components=card-fields")
+        // Charger le SDK PayPal - utiliser EUR par défaut si currency non définie
+        const paypalCurrency = instance.currency || 'EUR';
+        Payment.urlToHead(instance.paypal_sdk_url + "?client-id=" + instance.client_id + "&currency=" + paypalCurrency + "&intent=capture&commit=true&components=card-fields")
             .then(() => {
                 instance.afterInitSDK();
             })

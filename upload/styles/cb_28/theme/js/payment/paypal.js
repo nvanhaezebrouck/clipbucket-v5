@@ -40,8 +40,9 @@ class Paypal {
 
             instance.attributes = {id_user_membership: id_user_membership, amount: amount, auto_renew: auto_renew, saveCard: saveCard };
 
-            // Charger le SDK PayPal
-            Payment.urlToHead(Paypal.paypal_sdk_url + "?client-id=" + Paypal.client_id + "&currency=" + currency + "&intent=capture&commit=true&components=card-fields", 'js')
+            // Charger le SDK PayPal - utiliser EUR par défaut si currency non définie
+            const paypalCurrency = currency || 'EUR';
+            Payment.urlToHead(Paypal.paypal_sdk_url + "?client-id=" + Paypal.client_id + "&currency=" + paypalCurrency + "&intent=capture&commit=true&components=card-fields", 'js')
                 .then(() => {
                     instance.afterInitSDK();
                 })
