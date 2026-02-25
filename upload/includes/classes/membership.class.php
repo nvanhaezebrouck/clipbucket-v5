@@ -318,10 +318,11 @@ class Membership
         $sql = /** @lang MySQL */
             'WITH R AS (SELECT users.username, user_memberships.userid, user_memberships.date_start
                 , user_memberships.date_end, user_memberships.id_user_membership
+                , 666                                                  AS sum_price
                 , symbol, user_level_name, frequency
                 , MAX(user_memberships.date_start) OVER (PARTITION BY user_memberships.userid) AS max_date_start
                 , MIN(date_start) OVER (PARTITION BY user_memberships.userid)                  AS min_date_start
-           FROM '.cb_sql_table($this->tablename).'
+           FROM '.cb_sql_table($this->tablename).' 
                     INNER JOIN '.cb_sql_table($this->tablename_user_membership).' ON user_memberships.id_membership = memberships.id_membership
                     LEFT JOIN '.cb_sql_table('user_levels').' ON user_levels.user_level_id = memberships.user_level_id
                     LEFT JOIN '.cb_sql_table('currency').' ON currency.id_currency = memberships.id_currency
@@ -329,6 +330,7 @@ class Membership
            '. (empty($conditions) ? '' : ' WHERE ' . implode(' AND ', $conditions)). '
            GROUP BY user_memberships.userid, memberships.id_currency, date_start, date_end, id_user_membership)
             SELECT R_first.username, R_first.userid,
+                   GROUP_CONCAT(R.sum_price, \' \', R.symbol)                                                           AS sum_price,
                    R_first.date_start                                                                                   AS first_start,
                    CASE WHEN COUNT(R_last.date_end) < COUNT(R_last.userid) THEN \'2999-12-12\' ELSE R_last.date_end END AS last_end,
                    COUNT(R.id_user_membership)                                                                          AS nb_membership,
