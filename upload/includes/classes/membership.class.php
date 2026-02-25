@@ -318,7 +318,7 @@ class Membership
         $sql = /** @lang MySQL */
             'WITH R AS (SELECT users.username, user_memberships.userid, user_memberships.date_start
                 , user_memberships.date_end, user_memberships.id_user_membership
-                , SUM(user_memberships.price)                                                  AS sum_price
+                , 666                                                  AS sum_price
                 , symbol, user_level_name, frequency
                 , MAX(user_memberships.date_start) OVER (PARTITION BY user_memberships.userid) AS max_date_start
                 , MIN(date_start) OVER (PARTITION BY user_memberships.userid)                  AS min_date_start

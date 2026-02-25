@@ -1348,8 +1348,7 @@ CREATE TABLE `{tbl_prefix}user_memberships`
     `id_membership`              INT      NOT NULL,
     `id_user_memberships_status` INT      NOT NULL,
     `date_start`                 DATETIME NOT NULL,
-    `date_end`                   DATETIME NULL,
-    `price`                      DECIMAL  NOT NULL
+    `date_end`                   DATETIME NULL
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE utf8mb4_unicode_520_ci;
 ALTER TABLE `{tbl_prefix}user_memberships`
     ADD CONSTRAINT `user_membership_user` FOREIGN KEY (`userid`) REFERENCES `{tbl_prefix}users` (`userid`) ON DELETE RESTRICT ON UPDATE RESTRICT;

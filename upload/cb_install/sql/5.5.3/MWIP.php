@@ -195,8 +195,7 @@ class MWIP extends \Migration
             `id_membership` INT NOT NULL,
             `id_user_memberships_status` INT NOT NULL,
             `date_start` datetime NOT NULL,
-            `date_end` datetime NULL,
-            `price` DECIMAL NOT NULL
+            `date_end` datetime NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_520_ci;';
         self::query($sql);
         self::alterTable('ALTER TABLE `' . tbl('user_memberships') . '` ADD CONSTRAINT `user_membership_user` FOREIGN KEY (`userid`) REFERENCES `' . tbl('users') . '` (`userid`) ON DELETE RESTRICT ON UPDATE RESTRICT;', [
