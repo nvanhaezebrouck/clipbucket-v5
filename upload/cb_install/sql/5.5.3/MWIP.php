@@ -1103,5 +1103,49 @@ class MWIP extends \Migration
             'en'=>'Save'
         ]);
 
+        self::generateTranslation('title_current_membership', [
+            'fr'=>'Abonnement actuel',
+            'en'=>'Current membership'
+        ]);
+
+        self::generateTranslation('next_paiement_date', [
+            'fr'=>'Prochaine date de paiement',
+            'en'=>'Next payment date'
+        ]);
+
+        self::generateTranslation('btn_re_enable_my_membership', [
+            'fr'=>'Réactiver mon abonnement',
+            'en'=>'Re-enable my membership'
+        ]);
+
+        self::generateTranslation('title_cancel_membership', [
+            'fr'=>'Annuler l\'abonnement',
+            'en'=>'Cancel membership'
+        ]);
+        self::generateTranslation('warning_cancel_membership', [
+            'fr'=>'Attention : En résiliant votre abonnement, vous perdrez l\'accès aux fonctionnalités premium à la fin de la période de facturation en cours. Votre abonnement restera actif jusqu\'au',
+            'en'=>'Warning: By canceling your subscription, you will lose access to premium features at the end of the current billing period. Your subscription will remain active until'
+        ]);
+
+        self::generateTranslation('account_will_be_free_after', [
+            'fr'=>'Après cette date, votre compte passera en mode gratuit.',
+            'en'=>'After this date, your account will switch to free mode.'
+        ]);
+
+        self::generateTranslation('can_reactivate_until', [
+            'fr'=>'Vous pouvez réactiver votre abonnement jusqu\'au',
+            'en'=>'You can reactivate your subscription until'
+        ]);
+
+        self::generateTranslation('no_paid_membership_history', [
+            'fr'=>'Vous n\'avez aucun abonnement qui a déjà été complètement payé.',
+            'en'=>'You don\'t have any subscription that has been fully paid.'
+        ]);
+
+        self::generateTranslation('automatic_renew', [
+            'fr'=>'Renouvellement automatique',
+            'en'=>'Automatic renewal'
+        ]);
+
     }
 }

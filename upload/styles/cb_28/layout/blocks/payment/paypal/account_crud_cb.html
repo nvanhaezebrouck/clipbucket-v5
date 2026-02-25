@@ -36,8 +36,8 @@
 <!-- Section Cartes de paiement -->
 <div class="payment-cards-section">
     <div class="section-header">
-        <h3>Cartes de paiement enregistrées</h3>
-        <button class="add-card-btn">+ Ajouter une carte</button>
+        <h3>{lang('saved_payment_cards')}</h3>
+        <button class="add-card-btn">+ {lang('add_card')}</button>
     </div>
 
     <div class="cards-container">
@@ -46,7 +46,7 @@
         <div class="payment-card add-card-form" id="addCardForm" style="display: none;">
             <div class="card-content" style="flex-direction: column; align-items: stretch;">
                 <div class="form-header">
-                    <h4 style="margin: 0; font-size: 16px; color: #333;">Ajouter une nouvelle carte</h4>
+                    <h4 style="margin: 0; font-size: 16px; color: #333;">{lang('add_new_card')}</h4>
                     <button class="close-form-btn" id="closeFormBtn" type="button">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
@@ -55,27 +55,27 @@
                 </div>
 
                 <div class="warning-box" style="margin: 16px 0;">
-                    <p><strong>ℹ️ Information :</strong> L'ajout d'une carte déclenchera une demande d'autorisation de paiement de 0,01 €. Ce montant ne sera pas prélevé, il s'agit uniquement d'une vérification de la validité de votre carte.</p>
+                    <p><strong>{lang('information')}</strong> {lang('card_add_info')}</p>
                 </div>
 
                 <form class="card-form">
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
-                            <label for="cardNumber">Numéro de carte</label>
+                            <label for="cardNumber">{lang('card_number')}</label>
                             <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group" style="flex: 1;">
-                            <label for="cardHolder">Titulaire de la carte</label>
+                            <label for="cardHolder">{lang('card_holder')}</label>
                             <input type="text" id="cardHolder" placeholder="Jean Dupont" required>
                         </div>
                     </div>
 
                     <div class="form-row" style="gap: 12px;">
                         <div class="form-group" style="flex: 1;">
-                            <label for="expiryMonth">Mois d'expiration</label>
+                            <label for="expiryMonth">{lang('expiry_month')}</label>
                             <select id="expiryMonth" required>
                                 <option value="">MM</option>
                                 <option value="01">01</option>
@@ -94,7 +94,7 @@
                         </div>
 
                         <div class="form-group" style="flex: 1;">
-                            <label for="expiryYear">Année d'expiration</label>
+                            <label for="expiryYear">{lang('expiry_year')}</label>
                             <select id="expiryYear" required>
                                 <option value="">YYYY</option>
                                 <option value="2026">2026</option>
@@ -117,8 +117,8 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" class="cancel-btn" id="cancelFormBtn">Annuler</button>
-                        <button type="submit" class="save-btn">Enregistrer la carte</button>
+                        <button type="button" class="cancel-btn" id="cancelFormBtn">{lang('cancel')}</button>
+                        <button type="submit" class="save-btn">{lang('save_card')}</button>
                     </div>
                 </form>
             </div>

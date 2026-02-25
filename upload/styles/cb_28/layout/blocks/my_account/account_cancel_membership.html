@@ -6,8 +6,7 @@
     {if $membership['language_key_title'] == 'completed' }
 
         <div class="warning-box">
-            <p><strong>⚠️ Attention :</strong> En résiliant votre abonnement, vous perdrez l'accès aux fonctionnalités premium à la fin de la période de facturation en cours.
-                Votre abonnement restera actif jusqu'au {$membership['next_date_renew']}. Après cette date, votre compte passera en mode gratuit.</p>
+            <p><strong>{lang('warning_cancel_membership')}</strong> {lang('membership_active_until')} {$membership['next_date_renew']}. {lang('account_will_be_free_after')}</p>
         </div>
 
         <div>
@@ -19,7 +18,7 @@
     {elseif $membership['language_key_title'] == 'canceled' && Membership::getInstance()->isUserMembershipHasAlreadyHaveCompletedTransactionInHisHistory($membership['id_user_membership'])}
 
         <div class="info-box">
-            <p><strong>Info :</strong> Vous pouvez réactiver votre abonnement jusqu'au {$membership['next_date_renew']}. Après cette date, votre compte passera en mode gratuit.</p>
+            <p><strong>{lang('info')}</strong> {lang('can_reactivate_until')} {$membership['next_date_renew']}. {lang('account_will_be_free_after')}</p>
         </div>
 
         <div>
@@ -31,7 +30,7 @@
     {else}
 
         <div class="info-box">
-            <p><strong>Info :</strong> Vous n'avez aucun membership qui a déjà était complemeent payé.</p>
+            <p><strong>Info :</strong> {lang('no_paid_membership_history')}</p>
         </div>
 
     {/if}
