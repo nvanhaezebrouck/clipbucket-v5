@@ -1,7 +1,7 @@
 <!-- Bloc de paiement par carte bancaire -->
 <div class="payment-section">
     <div class="section-header">
-        <h3>Effectuer un paiement</h3>
+        <h3>{lang('make_payment')}</h3>
     </div>
 
     <!-- Message de succès (masqué par défaut) -->
@@ -10,7 +10,7 @@
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
         </svg>
         <div>
-            <strong>Paiement réussi !</strong>
+            <strong>{lang('payment_successful')}</strong>
             <p>Votre paiement de <strong>50,00 €</strong> a été traité avec succès. Vous recevrez un email de confirmation dans quelques instants.</p>
         </div>
         <button class="alert-close" onclick="document.getElementById('successMessage').style.display='none'">
@@ -26,7 +26,7 @@
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
         </svg>
         <div>
-            <strong>Échec du paiement</strong>
+            <strong>{lang('payment_failed')}</strong>
             <div class="error_msg">Votre paiement n'a pas pu être traité. Raison : <strong>Carte refusée</strong>. Veuillez vérifier vos informations ou utiliser une autre carte.</div>
         </div>
         <button class="alert-close" onclick="document.getElementById('errorMessage').style.display='none'">
@@ -39,7 +39,7 @@
     <div class="payment-form-container" id="paypal-card-form">
         <div class="payment-form" id="paymentForm">
             <div class="payment-amount">
-                <label>Montant à payer</label>
+                <label>{lang('amount_to_pay')}</label>
                 <div class="amount-display"></div>
             </div>
 
@@ -47,11 +47,11 @@
             <div class="payment-method-selector">
                 <label class="payment-method-option">
                     <input type="radio" name="paymentMethod" value="saved" id="useSavedCard" checked>
-                    <span>Utiliser une carte enregistrée</span>
+                    <span>{lang('use_saved_card')}</span>
                 </label>
                 <label class="payment-method-option">
                     <input type="radio" name="paymentMethod" value="new" id="useNewCard">
-                    <span>Saisir une nouvelle carte</span>
+                    <span>{lang('enter_new_card')}</span>
                 </label>
             </div>
 
@@ -69,33 +69,33 @@
 
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label>Numéro de carte</label>
+                        <label>{lang('card_number')}</label>
                         <div id="card-number"></div>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <label>Titulaire de la carte</label>
+                        <label>{lang('card_holder')}</label>
                         <div id="card-name"></div>
                     </div>
                 </div>
 
                 <div class="form-row" style="gap: 12px;">
                     <div class="form-group" style="flex: 1;">
-                        <label>Expire</label>
+                        <label>{lang('expiry')}</label>
                         <div id="card-expiry"></div>
                     </div>
 
                     <div class="form-group" style="flex: 1;">
-                        <label>CVV</label>
+                        <label>{lang('cvv')}</label>
                         <div id="card-cvv"></div>
                     </div>
                 </div>
 
                 <div class="checkbox-group">
                     <input type="checkbox" id="saveCard" name="saveCard">
-                    <label for="saveCard">Enregistrer cette carte pour les prochains paiements. <br/>Vous pourrez la supprimer à tout moment depuis votre compte.</label>
+                    <label for="saveCard">{lang('save_card_for_future')}</label>
                 </div>
 
             </div>
