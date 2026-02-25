@@ -1,15 +1,41 @@
 <?php
 
 require_once DirPath::get('classes') . 'payment/payment.interface.php';
+require_once DirPath::get('classes') . 'payment/clipbucketpayment.class.php';
 
 class Payment implements PaymentSystemInterface
 {
 
+    private static ?Payment $instance = null;
     private PaymentSystemInterface $instance_payment;
+    private ClipbucketPayment $clipbucketPayment;
 
-    public function __construct(PaymentSystemInterface $instance_payment)
+    private function __construct(PaymentSystemInterface $instance_payment)
     {
         $this->instance_payment = $instance_payment;
+        $this->clipbucketPayment = ClipbucketPayment::getInstance();
+    }
+
+    /**
+     * Get singleton instance
+     */
+    public static function getInstance(?PaymentSystemInterface $payment = null): Payment
+    {
+        if (self::$instance === null) {
+            if ($payment === null) {
+                throw new Exception('Payment instance required for first initialization');
+            }
+            self::$instance = new self($payment);
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Reset singleton instance (for testing)
+     */
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
     }
 
     public function getInstancePayment() :PaymentSystemInterface
@@ -17,9 +43,31 @@ class Payment implements PaymentSystemInterface
         return $this->instance_payment;
     }
 
+    public function getClipbucketPayment() :ClipbucketPayment
+    {
+        return $this->clipbucketPayment;
+    }
+
     public function successPayment(string $transactionId, array $data = []): bool
     {
-        return $this->getInstancePayment()->successPayment($transactionId, $data);
+        // First handle PayPal-specific logic
+        $paypalResult = $this->getInstancePayment()->successPayment($transactionId, $data);
+
+        // Then handle ClipBucket-specific logic (membership, etc.)
+        if (!empty($data['id_user_membership'])) {
+            try {
+                $this->clipbucketPayment->successPayment(
+                    (int)$data['id_user_membership'],
+                    (int)$transactionId,
+                    $data['membership_data'] ?? []
+                );
+            } catch (Exception $e) {
+                error_log('ClipbucketPayment successPayment failed: ' . $e->getMessage());
+                return false;
+            }
+        }
+
+        return $paypalResult;
     }
 
     public function failedPayment(string $transactionId, string $reason, array $data = []): bool
@@ -150,17 +198,15 @@ class Payment implements PaymentSystemInterface
             default:
                 return $this->getInstancePayment()->callAction($action, $userId);
         }
-
     }
 
-    public function getJsFile():string
+    public function getJsFile() :string
     {
         return $this->getInstancePayment()->getJsFile();
     }
 
-    public function getCssFile():string
+    public function getCssFile() :string
     {
         return $this->getInstancePayment()->getCssFile();
     }
-
 }
