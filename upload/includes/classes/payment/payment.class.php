@@ -5,11 +5,34 @@ require_once DirPath::get('classes') . 'payment/payment.interface.php';
 class Payment implements PaymentSystemInterface
 {
 
+    private static ?Payment $instance = null;
     private PaymentSystemInterface $instance_payment;
 
-    public function __construct(PaymentSystemInterface $instance_payment)
+    private function __construct(PaymentSystemInterface $instance_payment)
     {
         $this->instance_payment = $instance_payment;
+    }
+
+    /**
+     * Get singleton instance
+     */
+    public static function getInstance(?PaymentSystemInterface $payment = null): Payment
+    {
+        if (self::$instance === null) {
+            if ($payment === null) {
+                throw new Exception('Payment instance required for first initialization');
+            }
+            self::$instance = new self($payment);
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Reset singleton instance (for testing)
+     */
+    public static function resetInstance(): void
+    {
+        self::$instance = null;
     }
 
     public function getInstancePayment() :PaymentSystemInterface
@@ -17,9 +40,86 @@ class Payment implements PaymentSystemInterface
         return $this->instance_payment;
     }
 
+    /**
+     * Handle successful payment - ClipBucket logic
+     */
     public function successPayment(string $transactionId, array $data = []): bool
     {
-        return $this->getInstancePayment()->successPayment($transactionId, $data);
+        // First handle PayPal-specific logic
+        $paypalResult = $this->getInstancePayment()->successPayment($transactionId, $data);
+
+        // Then handle ClipBucket-specific logic (membership)
+        // Récupérer l'id_user_membership depuis les données
+        $idUserMembership = $data['id_user_membership'] ?? null;
+        if (empty($idUserMembership)) {
+            throw new Exception('id_user_membership is required for membership payment');
+        }
+
+        // Récupérer les données du membership
+        $membershipData = Membership::getInstance()->getAllHistoMembershipForUser([
+            'id_user_membership' => $idUserMembership
+        ]);
+
+        if (empty($membershipData) || empty($membershipData[0])) {
+            throw new Exception('Membership not found for id: ' . $idUserMembership);
+        }
+
+        $membership = $membershipData[0];
+        $idPaypalTransaction = (int)$transactionId;
+
+        try {
+            // Mettre à jour le membership
+            Membership::getInstance()->updateHistoMembership([
+                'id_user_membership' => $idUserMembership,
+                'id_user_memberships_status' => 2, // completed
+                'date_start' => date('Y-m-d'),
+                'date_end' => $this->getNextDate($membership['frequency'] ?? 'monthly', date('Y-m-d'))
+            ]);
+
+            // Lier la transaction au membership
+            $this->insertTransactionOnUserMembership($idUserMembership, $idPaypalTransaction);
+        } catch (Exception $e) {
+            error_log('ClipbucketPayment successPayment failed: ' . $e->getMessage());
+            throw $e;
+        }
+
+        return $paypalResult;
+    }
+
+    /**
+     * Calculate next payment date based on frequency
+     */
+    protected function getNextDate(string $frequency, string $date): string
+    {
+        $timestamp = strtotime($date);
+
+        switch (strtolower($frequency)) {
+            case 'weekly':
+                $next = strtotime('+1 week', $timestamp);
+                break;
+            case 'monthly':
+                $next = strtotime('+1 month', $timestamp);
+                break;
+            case 'yearly':
+                $next = strtotime('+1 year', $timestamp);
+                break;
+            default:
+                return date('Y-m-d', $timestamp);
+        }
+
+        return date('Y-m-d', $next);
+    }
+
+    /**
+     * Link PayPal transaction to user membership
+     */
+    protected function insertTransactionOnUserMembership(int $idUserMembership, int $idPaypalTransaction): void
+    {
+        $sql = 'INSERT IGNORE INTO ' . cb_sql_table('user_memberships_transactions') . ' 
+                (id_user_membership, id_paypal_transaction) 
+                VALUES (' . mysql_clean($idUserMembership) . ', ' . mysql_clean($idPaypalTransaction) . ')';
+
+        Clipbucket_db::getInstance()->execute($sql);
     }
 
     public function failedPayment(string $transactionId, string $reason, array $data = []): bool
@@ -150,17 +250,15 @@ class Payment implements PaymentSystemInterface
             default:
                 return $this->getInstancePayment()->callAction($action, $userId);
         }
-
     }
 
-    public function getJsFile():string
+    public function getJsFile() :string
     {
         return $this->getInstancePayment()->getJsFile();
     }
 
-    public function getCssFile():string
+    public function getCssFile() :string
     {
         return $this->getInstancePayment()->getCssFile();
     }
-
 }

@@ -639,7 +639,38 @@ class Paypal implements PaymentSystemInterface
 
     protected function beforeCompleteOrder(array $attributes) :void { }
 
-    protected function handleCompleteSuccess(string $response, array $attributes, array $vaultData) :void { }
+    protected function handleCompleteSuccess(string $response, array $attributes, array $vaultData) :void
+    {
+        $responseData = json_decode($response, true);
+        if ($responseData['status'] !== 'COMPLETED') {
+            return;
+        }
+
+        // Get transaction details from PayPal tables
+        $transaction = $this->getTransactionByOrderId($responseData['id']);
+        if (empty($transaction)) {
+            throw new Exception('Transaction not found for order: ' . $responseData['id']);
+        }
+
+        // Get membership id from attributes
+        $idUserMembership = $attributes['id_user_membership'] ?? null;
+        if (empty($idUserMembership)) {
+            throw new Exception('id_user_membership is required for membership payment');
+        }
+
+        $idPaypalTransaction = (int)$transaction['id_paypal_transaction'];
+
+        // Call Payment singleton to handle ClipBucket logic
+        try {
+            $payment = \Payment::getInstance();
+            $payment->successPayment((string)$idPaypalTransaction, [
+                'id_user_membership' => (int)$idUserMembership
+            ]);
+        } catch (Exception $e) {
+            error_log('Failed to process membership payment: ' . $e->getMessage());
+            throw $e;
+        }
+    }
 
     protected function handleCompleteError(\Exception $e, array $attributes) :void { }
 
