@@ -261,8 +261,8 @@ class Paypal extends \OxygenzSAS\Paypal\Paypal
             'id_user_membership' => $datas[0]['id_user_membership']
             /** @todo Clement a rendre dynamic en recuperant l'id a partir du language_key_title */
             ,'id_user_memberships_status' => 2 /* completed */
-            ,'date_start' => date('Y-m-d H:i:s')
-            ,'date_end' => self::getNextDate( $datas[0]['frequency'], date('Y-m-d H:i:s'))
+            ,'date_start' => date('Y-m-d')
+            ,'date_end' => self::getNextDate( $datas[0]['frequency'], date('Y-m-d'))
         ]);
 
         /** set vault data and link them to user account */

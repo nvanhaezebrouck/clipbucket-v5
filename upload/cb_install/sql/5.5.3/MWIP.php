@@ -180,7 +180,7 @@ class MWIP extends \Migration
         $sql = 'SELECT * FROM `' . tbl('user_memberships_status') . '`';
         $results = \Clipbucket_db::getInstance()->_select($sql);
         if (empty($results)) {
-            $sql = 'INSERT IGNORE INTO `' . tbl('user_memberships_status') . '` (`language_key_title`)  VALUES (\'in_progress\'), (\'completed\'), (\'canceled\'), (\'refunded\')';
+            $sql = 'INSERT IGNORE INTO `' . tbl('user_memberships_status') . '` (`language_key_title`)  VALUES (\'in_progress\'), (\'completed\'), (\'canceled\'), (\'refunded\'), (\'authorized\'), (\'failed_capture\')';
             self::query($sql);
         }
 
