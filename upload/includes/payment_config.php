@@ -17,7 +17,7 @@ $paypal = new Paypal([
     ,'tablename_paypal_vault' => tbl('paypal_vault') /* table name for vault card */
 ]);
 
-return new Payment(instance_payment: $paypal);
+return Payment::getInstance($paypal);
 
 /*
 global $DBHOST, $DBNAME, $DBUSER, $DBPASS, $DBPORT;
