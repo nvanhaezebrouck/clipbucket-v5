@@ -118,19 +118,24 @@ RUN if [ -f /etc/nginx/sites-available/xhgui ]; then \
     fi
 
 
-# Install phpMyAdmin via git clone if requested
+# Install phpMyAdmin from official release (includes pre-compiled assets)
 RUN if [ "$INSTALL_PHPMYADMIN" = "true" ]; then \
-        apt-get update && apt-get install -y --no-install-recommends composer && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends wget unzip && \
         mkdir -p /usr/share/phpmyadmin /var/lib/phpmyadmin/tmp && \
-        git clone --depth 1 --branch STABLE https://github.com/phpmyadmin/phpmyadmin.git /usr/share/phpmyadmin && \
+        PMA_VERSION=$(wget -qO- https://www.phpmyadmin.net/home_page/version.json | grep -o '"version": "[^"]*"' | cut -d'"' -f4) && \
+        echo "Downloading phpMyAdmin version: $PMA_VERSION" && \
+        wget -q "https://files.phpmyadmin.net/phpMyAdmin/${PMA_VERSION}/phpMyAdmin-${PMA_VERSION}-all-languages.zip" -O /tmp/phpmyadmin.zip && \
+        unzip -q /tmp/phpmyadmin.zip -d /tmp && \
+        mv /tmp/phpMyAdmin-*-all-languages/* /usr/share/phpmyadmin/ && \
+        rm -rf /tmp/phpMyAdmin-*-all-languages /tmp/phpmyadmin.zip && \
         chmod 777 /var/lib/phpmyadmin/tmp && \
-        cd /usr/share/phpmyadmin && \
-        composer install --no-dev --optimize-autoloader 2>/dev/null || true && \
         (apt-get install -y --no-install-recommends php${PHP_VERSION}-bcmath php${PHP_VERSION}-opcache || \
          apt-get install -y --no-install-recommends php-bcmath php-opcache || true) && \
         echo "<?php \$cfg['blowfish_secret'] = '$(openssl rand -base64 32)'; \$cfg['TempDir'] = '/var/lib/phpmyadmin/tmp'; \$cfg['Servers'][1]['auth_type'] = 'cookie'; \$cfg['Servers'][1]['host'] = 'localhost'; \$cfg['Servers'][1]['compress'] = false; \$cfg['Servers'][1]['AllowNoPassword'] = false;" > /usr/share/phpmyadmin/config.inc.php && \
         rm -rf /var/lib/apt/lists/*; \
     fi
+
 
 # Add entrypoint script
 COPY docker/entrypoint.sh /usr/local/bin/
